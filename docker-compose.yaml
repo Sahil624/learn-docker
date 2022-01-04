@@ -10,6 +10,11 @@ services:
       - "mongo-data:/data/db"
     ports:
       - "27017:27017"
+    networks:
+      main:
+        aliases:
+          - mongo
+
   mongo-express:
     image: mongo-express
     ports:
@@ -22,6 +27,44 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongo
     links:
       - mongo
+    networks:
+      main:
+        aliases:
+          - mongo-express
+
+  web-server:
+    build: ./server
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    ports:
+      - "3000:3000"
+    networks:
+      main:
+        aliases:
+          - web-server
+
+  frontend:
+    build: ./client
+    depends_on:
+      - web-server
+    links:
+      - web-server
+    expose:
+      - "80"
+    ports:
+      - "80:80"
+    networks:
+      main:
+        aliases:
+          - frontend
+
 volumes:
+  nginx:
+    driver: local
   mongo-data:
     driver: local
+
+networks:
+  main:

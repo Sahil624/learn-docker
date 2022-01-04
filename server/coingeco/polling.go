@@ -45,7 +45,11 @@ func fetchPrice() {
 			priceMap[symbol] = symbolPrice["usd"]
 			fmt.Printf("Symbol %s - Price %f\n", symbol, price)
 
-			_, err = db.Collection("coinDB").UpdateOne(context.Background(), bson.D{{"symbol_id", symbol}}, bson.D{{"$set", bson.D{{"ltp", price}}}})
+			_, err = db.Collection("coinDB").UpdateOne(
+				context.Background(),
+				bson.D{{"symbol_id", symbol}},
+				bson.D{{"$set", bson.D{{"ltp", price}}}},
+			)
 			if err != nil {
 				log.Println("caught exception during transaction, aborting.")
 			}

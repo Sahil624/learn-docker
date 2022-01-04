@@ -6,7 +6,9 @@ func readChannel() {
 	for price := range coingeco.GetChannel() {
 		for k := range price {
 			for _, conn := range symbolConnection[k] {
-				conn.WriteJSON(price)
+				if conn != nil && conn.Conn != nil {
+					conn.WriteJSON(price)
+				}
 			}
 		}
 	}

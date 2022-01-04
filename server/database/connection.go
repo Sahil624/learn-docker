@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -12,7 +13,15 @@ var client *mongo.Client
 
 func ConnectMongo() error {
 	var err error
-	client, err = mongo.Connect(context.Background(), options.Client().ApplyURI("mongodb://admin:password@localhost:27017/"))
+	//host := os.Getenv("HOSTNAME")
+	//if host == "" {
+	//	host = "localhost"
+	//}
+	host := "mongo"
+	address := fmt.Sprintf("mongodb://admin:password@%s:27017/", host)
+	fmt.Println("Mongo Address", address)
+	clientOptions := options.Client().ApplyURI(address)
+	client, err = mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		return err
 	}

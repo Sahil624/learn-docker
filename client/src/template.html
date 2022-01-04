@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+
+    <title><%= htmlWebpackPlugin.options.title %></title>
+</head>
+
+<body>
+<div class="title-container">
+    <h1>CoinGec Watch</h1>
+</div>
+
+<table class="tablesorter">
+    <div class="search-input">
+        <a href="" target="_blank" hidden></a>
+        <input id="coin-search" type="text" placeholder="Type to search..">
+        <div class="autocom-box">
+            <!-- here list are inserted from javascript -->
+        </div>
+<!--        <div class="icon"><i class="fas fa-search"></i></div>-->
+    </div>
+
+
+    <thead>
+    <th>Stock</th>
+    <th>Price</th>
+    <th>Change</th>
+    <th>%</th>
+    </thead>
+    <tbody></tbody>
+</table>
+</body>
+</html>

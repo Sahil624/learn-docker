@@ -5,11 +5,12 @@ import (
 	"github.com/Sahil624/learn-docker/database"
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
 )
 
-func RegisterStaticRoute(app *fiber.App) {
+func RegisterStaticRoute(app fiber.Router) {
 	staticRoute := app.Group("/static_data")
 	staticRoute.Get("/search", coinSearch)
 }
@@ -27,12 +28,16 @@ func coinSearch(ctx *fiber.Ctx) error {
 		})
 	}
 
-	query := bson.D{}
+	query := bson.M{}
 
 	if req.Query != "" {
-		query = bson.D{
-			{"symbol_id", req.Query},
-		}
+		//query = bson.D{
+		//	{"symbol_id", fmt.Sprintf("/%s/i", req.Query)},
+		//}
+		query = bson.M{"symbol_id": primitive.Regex{
+			Pattern: "^" + req.Query,
+			Options: "i",
+		}}
 	}
 
 	db := database.GetDatabase()
@@ -41,12 +46,13 @@ func coinSearch(ctx *fiber.Ctx) error {
 	response, err := db.Collection("coinDB").Find(context.Background(), query, opt)
 
 	if err != nil {
+		log.Println("Eror in fetch static search", err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(&fiber.Map{
 			"reason": "Internal error",
 		})
 	}
 
-	var responseArray = []Symbol{}
+	var responseArray []Symbol
 	err = response.All(context.Background(), &responseArray)
 
 	if err != nil {

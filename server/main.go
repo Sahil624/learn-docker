@@ -6,12 +6,13 @@ import (
 	"github.com/Sahil624/learn-docker/database"
 	"github.com/Sahil624/learn-docker/ticker"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
 	"log"
 )
 
 func main() {
-	log.Println("Starting Server")
+	log.Println("Starting Server!!!")
 
 	if err := database.ConnectMongo(); err != nil {
 		log.Fatalln("Error in connecting database", err)
@@ -24,14 +25,17 @@ func main() {
 
 	app := fiber.New()
 
-	app.Use("/ws", ticker.UpgradeSocket)
-	app.Use("/ws/ticker", websocket.New(ticker.WebsocketHandler))
+	app.Static("/", "./public_build")
 
-	api.RegisterStaticRoute(app)
+	app.Use(cors.New())
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
-	})
+	apiRoute := app.Group("/api")
 
-	app.Listen(":3000")
+	apiRoute.Use("/ws", ticker.UpgradeSocket)
+	apiRoute.Use("/ws/ticker", websocket.New(ticker.WebsocketHandler))
+
+	api.RegisterStaticRoute(apiRoute)
+	address := ":3000"
+	log.Println("Go Server Running on Address", address)
+	app.Listen(address)
 }
